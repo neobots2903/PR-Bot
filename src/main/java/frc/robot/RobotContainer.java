@@ -13,8 +13,6 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,11 +22,6 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOSim;
 import frc.robot.subsystems.drive.DriveIOTalonSRX;
-import frc.robot.subsystems.roller.Roller;
-import frc.robot.subsystems.roller.RollerIO;
-import frc.robot.subsystems.roller.RollerIOSim;
-import frc.robot.subsystems.roller.RollerIOTalonSRX;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -39,13 +32,13 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final Roller roller;
+  // private final Roller roller;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
 
   // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser;
+  // private final LoggedDashboardChooser<Command> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -54,27 +47,27 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         // drive = new Drive(new DriveIOTalonSRX(), new GyroIOPigeon2());
         drive = new Drive(new DriveIOTalonSRX());
-        roller = new Roller(new RollerIOTalonSRX());
+        // roller = new Roller(new RollerIOTalonSRX());
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
         // drive = new Drive(new DriveIOSim(), new GyroIO() {});
         drive = new Drive(new DriveIOSim());
-        roller = new Roller(new RollerIOSim());
+        // roller = new Roller(new RollerIOSim());
         break;
 
       default:
         // Replayed robot, disable IO implementations
         // drive = new Drive(new DriveIO() {}, new GyroIO() {});
         drive = new Drive(new DriveIO() {});
-        roller = new Roller(new RollerIO() {});
+        // roller = new Roller(new RollerIO() {});
         break;
     }
 
     // Set up auto routines
-    NamedCommands.registerCommand("Score", roller.runPercent(1.0).withTimeout(3.0));
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // NamedCommands.registerCommand("Score", roller.runPercent(1.0).withTimeout(3.0));
+    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
     // autoChooser.addOption(
@@ -107,9 +100,9 @@ public class RobotContainer {
             drive, () -> -controller.getLeftY(), () -> -controller.getRightX()));
 
     // Default roller command, control with triggers
-    roller.setDefaultCommand(
-        roller.runTeleop(
-            () -> controller.getRightTriggerAxis(), () -> controller.getLeftTriggerAxis()));
+    // roller.setDefaultCommand(
+    //     roller.runTeleop(
+    //         () -> controller.getRightTriggerAxis(), () -> controller.getLeftTriggerAxis()));
   }
 
   /**
@@ -118,6 +111,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    // return autoChooser.get();
+    return null;
   }
 }
