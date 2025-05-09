@@ -16,12 +16,16 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOSim;
 import frc.robot.subsystems.drive.DriveIOTalonSRX;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOSpark;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -33,6 +37,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   // private final Roller roller;
+  private final Shooter shooter;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -47,6 +52,7 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         // drive = new Drive(new DriveIOTalonSRX(), new GyroIOPigeon2());
         drive = new Drive(new DriveIOTalonSRX());
+        shooter = new Shooter(new ShooterIOSpark(1, 10));
         // roller = new Roller(new RollerIOTalonSRX());
         break;
 
@@ -54,6 +60,7 @@ public class RobotContainer {
         // Sim robot, instantiate physics sim IO implementations
         // drive = new Drive(new DriveIOSim(), new GyroIO() {});
         drive = new Drive(new DriveIOSim());
+        shooter = new Shooter(new ShooterIOSpark(100, 100)); // Fix Later
         // roller = new Roller(new RollerIOSim());
         break;
 
@@ -61,6 +68,7 @@ public class RobotContainer {
         // Replayed robot, disable IO implementations
         // drive = new Drive(new DriveIO() {}, new GyroIO() {});
         drive = new Drive(new DriveIO() {});
+        shooter = new Shooter(new ShooterIO() {});
         // roller = new Roller(new RollerIO() {});
         break;
     }
@@ -103,6 +111,13 @@ public class RobotContainer {
     // roller.setDefaultCommand(
     //     roller.runTeleop(
     //         () -> controller.getRightTriggerAxis(), () -> controller.getLeftTriggerAxis()));
+
+    // Shooter commands (right trigger to shoot, passes in analog value clamped between 0 and 0.6).
+    controller.a().onTrue(Commands.runOnce(() -> shooter.releaseBall()));
+
+    controller.rightTrigger().whileTrue(
+        Commands.run(() -> shooter.runPercent(Math.min(Math.pow(controller.getRightTriggerAxis(), 2) * Math.signum(controller.getRightTriggerAxis()), 0.6))));
+    // shooter.runPercent(Math.min(Math.copySign(controller.getRightTriggerAxis() * controller.getRightTriggerAxis(), controller.getRightTriggerAxis()), 0.6));
   }
 
   /**
